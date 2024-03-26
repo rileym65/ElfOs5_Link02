@@ -8,10 +8,12 @@
               extrn     cfildes
               extrn     fopen
               extrn     loadfile
+              extrn     offset
               extrn     outputmode
               extrn     outputname
               extrn     readln
               extrn     save_d
+              extrn     save_rf
               extrn     strcasecmpin
               extrn     trimrf
 
@@ -36,6 +38,9 @@ opened:       mov       rf,buffer      ; point to buffer
               call      strcasecmpin   ; check for output command
               db        'output ',0
               lbdf      is_output      ; jump if so
+              call      strcasecmpin   ; check for offset command
+              db        'offset ',0
+              lbdf      is_offset      ; jump if so
 
               lbr       opened         ; read and process next line
 
@@ -87,6 +92,29 @@ out_loop:     ldn       rf             ; get byte from line
               lbr       out_loop       ; loop until name copied
 out_done:     ldi       0              ; terminate name
               str       r7
+              lbr       opened         ; read and process next line
+
+is_offset:    call      trimrf         ; move past spaces
+              ldn       rf             ; get next byte
+              smi       '-'            ; check for negative sign
+              lbnz      offset_p       ; jump if positive offset
+              inc       rf             ; move past minus sign
+              ldi       0ffh           ; signal need negative
+              lskp
+offset_p:     ldi       0              ; signal positive
+              stxd                     ; save for now
+              call      f_hexin        ; convert hex value
+              irx                      ; recover sign
+              lbz       offset_p2      ; jump if positive
+              glo       rd             ; negate result
+              xri       0ffh
+              plo       rd
+              ghi       rd
+              xri       0ffh
+              phi       rd
+              inc       rd
+offset_p2:    mov       rf,rd          ; move to rf
+              hlpr      save_rf,offset ; save offset
               lbr       opened         ; read and process next line
 
               endp

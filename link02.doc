@@ -8,7 +8,7 @@ Command line options:
          -i - output as Intel hex
          -s - show symbols
   -O offset - Offset address in intel mode
-  -o file   - output to specified file
+    -o file - output to specified file
 
 Note: multiple object files are allowed on the command line
       offset is in hex and can be negative
@@ -19,6 +19,7 @@ Control Files:
   mode elfos           - set Elf/OS output mode
   mode intel           - set Intel hex output mode
   mode rcs             - set RCS hex output mode
+  offset offs          - set address offset for Intel hex mode
   output filename      - filename for output
 
 
