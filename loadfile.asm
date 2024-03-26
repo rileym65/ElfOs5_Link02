@@ -10,7 +10,9 @@
               extrn     load_d
               extrn     outputname
               extrn     processadjust
+              extrn     processadvance
               extrn     processdata
+              extrn     processdirect
               extrn     processendp
               extrn     processfixup
               extrn     processproc
@@ -126,7 +128,18 @@ not_ha:       ldn       rf             ; recover first byte
               lbnz      not_la         ; jump if not
               call      processadjust  ; process adjustment
               lbr       loop           ; then back for next line
-not_la:
+not_la:       ldn       rf             ; recover first byte
+              smi       '>'            ; check for advance address
+              lbnz      not_adv        ;jump if not
+              call      processadvance ; process advancement
+              lbr       loop           ; then back to loop
+not_adv:      ldn       rf             ; recover first byte
+              smi       '.'            ; check for directive
+              lbnz      not_direct     ; jump if not
+              call      processdirect  ; process directive
+              lbr       loop           ; then back to loop
+
+not_direct:
               lbr       loop           ; ignore line and process next line
 
 done:         rtn                      ; return to caller

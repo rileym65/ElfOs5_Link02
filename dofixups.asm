@@ -103,12 +103,17 @@ fix_high:     inc       rf             ; move to address
               phi       ra
               lda       rf
               plo       ra
+              ldn       rf             ; get offset
+              str       r2
+              glo       r7             ; add into reference address
+              add
+              plo       r7
+              ghi       r7
+              adci      0
+              phi       r7
               call      readmem        ; read the value
               str       r2             ; store for add
               ghi       r7             ; get high of symbol value
-              add                      ; and add
-              str       r2             ; store for add
-              ldn       rf             ; get offset
               add                      ; and add
               call      writemem       ; write it back to memory
               lbr       now_drop       ; now drop fixup

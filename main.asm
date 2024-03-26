@@ -586,6 +586,7 @@ flags:        db        0
               public    load_rb
               public    load_rc
               public    load_rd
+              public    load_rf
               public    loadsec
               public    lowest
               public    nextfixup

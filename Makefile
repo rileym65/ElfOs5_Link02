@@ -14,7 +14,9 @@ OBJS = \
 	loadfile.prg \
 	main.prg \
 	processadjust.prg \
+	processadvance.prg \
 	processdata.prg \
+	processdirect.prg \
 	processendp.prg \
 	processfixup.prg \
 	processproc.prg \
@@ -22,6 +24,8 @@ OBJS = \
 	processsymbol.prg \
 	readln.prg \
 	readmem.prg \
+	strcasecmpin.prg \
+	tolc.prg \
 	trimrf.prg \
 	writebinary.prg \
 	writeelfos.prg \
@@ -53,7 +57,9 @@ lists:
 	adjlst findsymbol.lst findsymbol
 	adjlst gethex.lst gethex
 	adjlst loadfile.lst loadfile
+	adjlst processadjust.lst processadjust
 	adjlst processdata.lst processdata
+	adjlst processdirect.lst processdirect
 	adjlst processfixup.lst processfixup
 	adjlst processstart.lst processstart
 	adjlst processsymbol.lst processsymbol

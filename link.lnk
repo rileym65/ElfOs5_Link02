@@ -8,7 +8,9 @@ add fopen.prg
 add gethex.prg
 add loadfile.prg
 add processadjust.prg
+add processadvance.prg
 add processdata.prg
+add processdirect.prg
 add processendp.prg
 add processfixup.prg
 add processproc.prg
@@ -16,6 +18,8 @@ add processstart.prg
 add processsymbol.prg
 add readln.prg
 add readmem.prg
+add strcasecmpin.prg
+add tolc.prg
 add trimrf.prg
 add writebinary.prg
 add writeelfos.prg
