@@ -1,0 +1,7 @@
+link02.bin
+*.build
+*.prg
+*.lst
+*.l
+*.sym
+

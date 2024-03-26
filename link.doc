@@ -1,0 +1,13 @@
+Usage:
+  link [options] objfile [ objfile ... ]
+
+Command line options:
+       -e - output as Elf/OS executable (default)
+       -h - output as RCS hex
+       -b - output as pure binary
+       -i - output as Intel hex
+       -s - show symbols
+  -o file - output to specified file
+
+Note: multiple object files are allowed on the command line
+
