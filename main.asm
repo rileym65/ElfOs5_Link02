@@ -4,6 +4,7 @@
 
               org       2000h
 
+              extrn     commandfile
               extrn     dofixups
               extrn     fixups
               extrn     loadfile
@@ -331,6 +332,9 @@ trim:         lda       ra             ; move past any spaces
               lbz       finished       ; jump if finished
               smi       '-'            ; check for switches
               lbz       is_switch      ; jump if so
+              ldn       ra             ; recover character
+              smi       '@'            ; check for command file
+              lbz       is_command     ; jump if so
 
               mov       rf,buffer      ; need somewhere to copy filename
 name_loop:    lda       ra             ; read byte from command line
@@ -428,6 +432,24 @@ sw_error:     call      o_inmsg        ; display error
               ldi       9              ; set error
               rtn                      ; and return
 
+is_command:   mov       rf,buffer      ; need somewhere to copy filename
+              inc       ra             ; move past @
+cmd_loop:     lda       ra             ; read byte from command line
+              lbz       cmd_done       ; jump if done with name
+              plo       re             ; keep a copy
+              smi       ' '            ; check for space
+              lbz       cmd_done       ; space ends name
+              glo       re             ; recover character
+              str       rf             ; write to buffer
+              inc       rf
+              lbr       cmd_loop       ; loop until name copied
+cmd_done:     dec       ra             ; move back to non name character
+              hlpr      save_ra,commandline ; save command line position
+              ldi       0              ; terminate name
+              str       rf
+              mov       rf,buffer      ; point to beginning of name
+              call      commandfile    ; process command file
+              lbr       loop           ; back to command loop
 
 finished:     mov       rf,fixups      ; point to fixups table
               ldn       rf             ; check for fixups
@@ -570,12 +592,14 @@ file_bytes:   db        0
 file_ptr:     dw        0
 file_line:    ds        80
 dta:          ds        512
+cfildes:      ds        614
 
 vmemdta:      ds        512
 flags:        db        0
 
               public    address
               public    buffer
+              public    cfildes
               public    fildes
               public    highest
               public    incopy

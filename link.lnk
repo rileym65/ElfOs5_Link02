@@ -1,6 +1,7 @@
 add main.prg
 add checkrange.prg
 add checkvmem.prg
+add commandfile.prg
 add dofixups.prg
 add dropfixup.prg
 add findsymbol.prg

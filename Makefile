@@ -5,6 +5,7 @@ INSTDIR=../../Image/bin
 OBJS = \
 	checkrange.prg \
 	checkvmem.prg \
+	commandfile.prg \
 	dofixups.prg \
 	dropfixup.prg \
 	final.prg \
@@ -52,6 +53,7 @@ clean:
 lists:
 	adjlst checkrange.lst checkrange
 	adjlst checkvmem.lst checkvmem
+	adjlst commandfile.lst commandfile
 	adjlst dofixups.lst dofixups
 	adjlst final.lst final
 	adjlst findsymbol.lst findsymbol
