@@ -8,6 +8,7 @@
               extrn     dofixups
               extrn     fixups
               extrn     loadfile
+              extrn     trimrf
               extrn     writebinary
               extrn     writeelfos
               extrn     writeintel
@@ -39,6 +40,7 @@ commandline:  dw        0
 nextfixup:    dw        0
 outputname:   ds        80
 symbols:      dw        0
+offset:       dw        0
 
 ; ***************************************
 ; ***** Helper functions tied to R9 *****
@@ -279,6 +281,7 @@ start2:       call      o_inmsg        ; display banner
               mov       rf,0           ; set highest
               hlpr      save_rf,highest
               hlpr      save_rf,procbase
+              hlpr      save_rf,offset
               ldi       'E'            ; set output mode to Elf/OS
               hlpr      save_d,outputmode
               mov       rf,fixups      ; mark end of fixup table
@@ -422,7 +425,37 @@ not_o:        ldn       ra             ; get switch
               inc       ra             ; move past switch
               lbr       trim           ; and keep processing
 
-not_s:
+not_s:        ldn       ra             ; get switch 
+              smi       'O'            ; check for offset switch
+              lbnz      not_uc_o       ; jump if not
+              inc       ra             ; move past O
+              mov       rf,ra          ; move point to rf
+              call      trimrf
+              ldn       rf             ; get byte
+              smi       '-'            ; check for minus
+              lbnz      s_positive     ; jump if positive
+              inc       rf             ; move past minus sign
+              ldi       0ffh           ; need to modify result
+              lskp
+s_positive:   ldi       0              ; no need to modify result
+              stxd                     ; save for now
+              call      f_hexin        ; convert vlue
+              irx                      ; recover sign
+              ldx
+              lbz       s_nosign       ; jump if no sign
+              glo       rd             ; 2s compliment result
+              xri       0ffh
+              plo       rd
+              ghi       rd
+              xri       0ffh
+              phi       rd
+              inc       rd
+s_nosign:     mov       ra,rf          ; reset command line pointer
+              mov       rf,rd
+              hlpr      save_rf,offset ; save offset
+              lbr       trim           ; then next option
+not_uc_o:
+
 sw_error:     call      o_inmsg        ; display error
               db        'Unknown switch: ',0
               ldn       ra
@@ -614,6 +647,7 @@ flags:        db        0
               public    loadsec
               public    lowest
               public    nextfixup
+              public    offset
               public    outputmode
               public    outputname
               public    procbase

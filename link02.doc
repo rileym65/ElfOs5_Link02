@@ -2,14 +2,16 @@ Usage:
   link02 [options] [@ctrlfile] objfile [ objfile ... ]
 
 Command line options:
-       -e - output as Elf/OS executable (default)
-       -h - output as RCS hex
-       -b - output as pure binary
-       -i - output as Intel hex
-       -s - show symbols
-  -o file - output to specified file
+         -e - output as Elf/OS executable (default)
+         -h - output as RCS hex
+         -b - output as pure binary
+         -i - output as Intel hex
+         -s - show symbols
+  -O offset - Offset address in intel mode
+  -o file   - output to specified file
 
 Note: multiple object files are allowed on the command line
+      offset is in hex and can be negative
 
 Control Files:
   add filename         - add specified object file

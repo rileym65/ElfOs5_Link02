@@ -12,6 +12,7 @@
               extrn     load_rb
               extrn     load_rd
               extrn     lowest
+              extrn     offset
               extrn     outputname
               extrn     readmem
               extrn     startaddr
@@ -35,7 +36,21 @@ next_line:    mov       rf,buffer
               db        ':00',0
               ldi       0              ; clear count
               plo       rc
+
+              push      ra
+              hlpr      load_rd,offset ; get offset
+              glo       ra             ; add offset to address
+              str       r2
+              glo       rd
+              add
+              plo       ra
+              ghi       ra
+              str       r2
+              ghi       rd
+              adc
+              phi       ra
               mov       rd,ra          ; move address for conversion
+              
               call      f_hexout4
               op        incopy
               db        '00',0
@@ -44,6 +59,7 @@ next_line:    mov       rf,buffer
               glo       ra
               add
               phi       rc
+              pop       ra
 loop:         hlpr      load_rb,highest ; get highest value
               glo       ra             ; highest - address
               str       r2

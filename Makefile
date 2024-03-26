@@ -67,6 +67,7 @@ lists:
 	adjlst processsymbol.lst processsymbol
 	adjlst readmem.lst readmem
 	adjlst writebinary.lst writebinary
+	adjlst writeintel.lst writeintel
 	adjlst writemem.lst writemem
 	adjlst writeln.lst writeln
 	adjlst writercs.lst writercs
