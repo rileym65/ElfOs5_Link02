@@ -13,6 +13,12 @@ Note: multiple object files are allowed on the command line
 
 Control Files:
   add filename         - add specified object file
+  mode binary          - set binary output mode
+  mode elfos           - set Elf/OS output mode
+  mode intel           - set Intel hex output mode
+  mode rcs             - set RCS hex output mode
+  output filename      - filename for output
+
 
 Object Files:
   .align word          - Align procedure on word boundary (2 bytes)

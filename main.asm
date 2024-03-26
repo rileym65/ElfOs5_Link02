@@ -614,6 +614,7 @@ flags:        db        0
               public    loadsec
               public    lowest
               public    nextfixup
+              public    outputmode
               public    outputname
               public    procbase
               public    save_d
