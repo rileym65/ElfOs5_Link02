@@ -7,20 +7,29 @@
               extrn     dropfixup
               extrn     findsymbol
               extrn     fixups
+              extrn     load_r7
+              extrn     procbase
               extrn     readmem
               extrn     writemem
 
 loop:         mov       rf,fixups      ; point to fixups table
 iloop:        ldn       rf             ; get byte from fixups table
               lbz       return         ; return if no more fixups
-              push      rf             ; save table position
+              ldn       rf             ; get first byte of fixup record
+              smi       '@'            ; check for adjustment record
+              lbnz      no_adjust      ; jump if not
+              mov       r8,rf          ; save fixup position
+              inc       rf             ; move past record marker
+              inc       rf             ; and terminator
+              lbr       do_fixup       ; then process adjustment
+no_adjust:    push      rf             ; save table position
               call      findsymbol     ; search for symbol
               pop       rf             ; recover position
               lbdf      notfound       ; jump if symbol not found
               mov       r8,rf          ; save fixup position
 name_lp:      lda       rf             ; find end of name
               lbnz      name_lp        ; loop until terminator found
-              ldn       rf             ; get fixup type
+do_fixup:     ldn       rf             ; get fixup type
               smi       '?'            ; check for 16 bit
               lbz       fix_16         ; jump if so
               ldn       rf             ; recover fixup type
@@ -29,6 +38,15 @@ name_lp:      lda       rf             ; find end of name
               ldn       rf             ; recover fixup type
               smi       '\'            ; check for low fix
               lbz       fix_low
+              ldn       rf             ; recover fixup type
+              smi       '+'            ; check for 16-bit adjustment
+              lbz       adj_16         ; jump if so
+              ldn       rf             ; recover fixup type
+              smi       '^'            ; check for high byte adjustment
+              lbz       adj_high       ; jump if so
+              ldn       rf             ; recover fixup type
+              smi       'v'            ; check for low byte adjustment
+              lbz       adj_low        ; jump if so
               rtn                      ; return if invalid fix
 
 notfound:     lda       rf             ; find end of fixup name
@@ -94,6 +112,15 @@ fix_high:     inc       rf             ; move to address
               add                      ; and add
               call      writemem       ; write it back to memory
               lbr       now_drop       ; now drop fixup
+
+adj_16:       hlpr      load_r7,procbase ; get proc base
+              lbr       fix_16         ; now handle as fix 16
+
+adj_low:      hlpr      load_r7,procbase ; get proc base
+              lbr       fix_low        ; now handle as fix low
+
+adj_high:     hlpr      load_r7,procbase ; get proc base
+              lbr       fix_high       ; now handle as fix high
 
 return:       rtn                      ; return to caller
 

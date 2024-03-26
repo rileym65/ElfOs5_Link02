@@ -7,8 +7,11 @@ add findsymbol.prg
 add fopen.prg
 add gethex.prg
 add loadfile.prg
+add processadjust.prg
 add processdata.prg
+add processendp.prg
 add processfixup.prg
+add processproc.prg
 add processstart.prg
 add processsymbol.prg
 add readln.prg

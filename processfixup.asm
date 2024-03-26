@@ -6,7 +6,9 @@
 
               extrn     gethex
               extrn     load_r8
+              extrn     load_rb
               extrn     nextfixup
+              extrn     procbase
               extrn     save_r8
               extrn     trimrf
 
@@ -32,6 +34,21 @@ name_done:    ldi       0              ; terminate name
               ldn       rf             ; get next byte
               lbz       error          ; jump if unexpected end
               call      gethex         ; get address for fixup
+
+              push      rb
+              hlpr      load_rb,procbase
+              glo       rb
+              str       r2
+              glo       r7
+              add
+              plo       r7
+              ghi       rb
+              str       r2
+              ghi       r7
+              adc
+              phi       r7
+              pop       rb
+
               ghi       r7             ; store into fixup record
               str       r8
               inc       r8

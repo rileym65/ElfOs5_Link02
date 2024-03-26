@@ -13,8 +13,11 @@ OBJS = \
 	gethex.prg \
 	loadfile.prg \
 	main.prg \
+	processadjust.prg \
 	processdata.prg \
+	processendp.prg \
 	processfixup.prg \
+	processproc.prg \
 	processstart.prg \
 	processsymbol.prg \
 	readln.prg \
@@ -46,6 +49,7 @@ lists:
 	adjlst checkrange.lst checkrange
 	adjlst checkvmem.lst checkvmem
 	adjlst dofixups.lst dofixups
+	adjlst final.lst final
 	adjlst findsymbol.lst findsymbol
 	adjlst gethex.lst gethex
 	adjlst loadfile.lst loadfile

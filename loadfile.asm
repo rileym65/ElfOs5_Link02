@@ -9,8 +9,11 @@
               extrn     fopen
               extrn     load_d
               extrn     outputname
+              extrn     processadjust
               extrn     processdata
+              extrn     processendp
               extrn     processfixup
+              extrn     processproc
               extrn     processstart
               extrn     processsymbol
               extrn     readln
@@ -98,7 +101,32 @@ not_lf:       ldn       rf             ; recover first byte
               lbnz      not_eq         ; jump if not
               call      processsymbol  ; process symbol
               lbr       loop           ; then back for next line
-not_eq:
+not_eq:       ldn       rf             ; recover first byte
+              smi       '{'            ; check for open brace symbol
+              lbnz      not_ob         ; jump if not
+              call      processproc    ; process proc
+              lbr       loop           ; then back for next line
+not_ob:       ldn       rf             ; recover first byte
+              smi       '}'            ; check for close brace symbol
+              lbnz      not_cb         ; jump if not
+              call      processendp    ; process endp
+              lbr       loop           ; then back for next line
+not_cb:       ldn       rf             ; recover first byte
+              smi       '+'            ; check for close plus symbol
+              lbnz      not_pl         ; jump if not
+              call      processadjust  ; process adjustment
+              lbr       loop           ; then back for next line
+not_pl:       ldn       rf             ; recover first byte
+              smi       '^'            ; check for close hi adjust symbol
+              lbnz      not_ha         ; jump if not
+              call      processadjust  ; process adjustment
+              lbr       loop           ; then back for next line
+not_ha:       ldn       rf             ; recover first byte
+              smi       'v'            ; check for close low adjust symbol
+              lbnz      not_la         ; jump if not
+              call      processadjust  ; process adjustment
+              lbr       loop           ; then back for next line
+not_la:
               lbr       loop           ; ignore line and process next line
 
 done:         rtn                      ; return to caller

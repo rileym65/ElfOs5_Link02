@@ -25,6 +25,8 @@ start:        mov       rf,K_VER       ; get kernel version
               ldi       014h           ; set return code
               rtn                      ; return to caller
 
+address:      dw        0
+procbase:     dw        0
 outputmode:   dw        0
 highest:      dw        0
 lowest:       dw        0
@@ -214,6 +216,18 @@ load_r8:      lda       r3             ; get address
               phi       r8
               br        helpers-1
 
+load_r7:      lda       r3             ; get address
+              phi       r7
+              lda       r3
+              plo       r7
+              lda       r7             ; retrieve the value
+              plo       re
+              lda       r7
+              plo       r7
+              glo       re
+              phi       r7
+              br        helpers-1
+
 incopy:       lda       r3
               str       rf
               inc       rf
@@ -263,6 +277,7 @@ start2:       call      o_inmsg        ; display banner
               hlpr      save_rf,startaddr ; and start address
               mov       rf,0           ; set highest
               hlpr      save_rf,highest
+              hlpr      save_rf,procbase
               ldi       'E'            ; set output mode to Elf/OS
               hlpr      save_d,outputmode
               mov       rf,fixups      ; mark end of fixup table
@@ -559,11 +574,13 @@ dta:          ds        512
 vmemdta:      ds        512
 flags:        db        0
 
+              public    address
               public    buffer
               public    fildes
               public    highest
               public    incopy
               public    load_d
+              public    load_r7
               public    load_r8
               public    load_ra
               public    load_rb
@@ -573,6 +590,7 @@ flags:        db        0
               public    lowest
               public    nextfixup
               public    outputname
+              public    procbase
               public    save_d
               public    save_r7
               public    save_r8
