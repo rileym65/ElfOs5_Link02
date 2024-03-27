@@ -4,10 +4,12 @@ LIBDIR=../../Lib
 INSTDIR=../../Image/bin
 OBJS = \
 	addlibrary.prg \
+	checkfixups.prg \
 	checkrange.prg \
 	checkvmem.prg \
 	commandfile.prg \
 	dofixups.prg \
+	dolibraries.prg \
 	dropfixup.prg \
 	final.prg \
 	findsymbol.prg \

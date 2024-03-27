@@ -1,9 +1,11 @@
 add main.prg
 add addlibrary.prg
+add checkfixups.prg
 add checkrange.prg
 add checkvmem.prg
 add commandfile.prg
 add dofixups.prg
+add dolibraries.prg
 add dropfixup.prg
 add findsymbol.prg
 add fopen.prg

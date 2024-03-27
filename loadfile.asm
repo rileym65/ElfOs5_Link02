@@ -5,8 +5,10 @@
               proc      loadfile
 
               extrn     buffer
+              extrn     dolines
               extrn     fildes
               extrn     fopen
+              extrn     islibrary
               extrn     load_d
               extrn     outputname
               extrn     processadjust
@@ -20,6 +22,8 @@
               extrn     processsymbol
               extrn     readln
 
+              hlpr      load_d,islibrary ; need to see if processing library file
+              lbnz      do_library     ; jump is so
               hlpr      load_d,outputname ; see if output name is set
               lbnz      nameset        ; jump if name is set
               mov       ra,rf          ; make copy of filename address
@@ -55,7 +59,7 @@ nameset:      call      o_inmsg        ; display message
               call      o_inmsg        ; display cr/lf
               db        10,13,0
               pop       rf             ; recover filename
-              push      rf             ; keep a copy of the filename
+do_library:   push      rf             ; keep a copy of the filename
               mov       rd,fildes      ; point to fildes
               mov       r7,0           ; no open flags
               call      fopen          ; attempt to open the file
@@ -68,11 +72,22 @@ nameset:      call      o_inmsg        ; display message
               db        10,13,0
               rtn                      ; then return to caller
 opened:       pop       rf             ; remove filename from stack
+
 loop:         mov       rf,buffer      ; point to input buffer
               mov       rd,fildes      ; point to fildes
               call      readln         ; read next line
               lbdf      done           ; jump if end of file
               mov       rf,buffer      ; point to input buffer
+
+              ldn       rf             ; recover first byte
+              smi       '{'            ; check for open brace symbol
+              lbnz      not_ob         ; jump if not
+              call      processproc    ; process proc
+              lbr       loop           ; then back for next line
+
+not_ob:       hlpr      load_d,dolines ; see if line processing is on
+              lbz       loop           ; do not process if not
+
               ldn       rf             ; get first byte
               smi       ':'            ; is it data marker
               lbnz      not_data       ; jump if not
@@ -103,12 +118,8 @@ not_lf:       ldn       rf             ; recover first byte
               lbnz      not_eq         ; jump if not
               call      processsymbol  ; process symbol
               lbr       loop           ; then back for next line
+
 not_eq:       ldn       rf             ; recover first byte
-              smi       '{'            ; check for open brace symbol
-              lbnz      not_ob         ; jump if not
-              call      processproc    ; process proc
-              lbr       loop           ; then back for next line
-not_ob:       ldn       rf             ; recover first byte
               smi       '}'            ; check for close brace symbol
               lbnz      not_cb         ; jump if not
               call      processendp    ; process endp

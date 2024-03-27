@@ -4,24 +4,24 @@
 
               proc      processendp
 
-              extrn     address
               extrn     dofixups
-              extrn     findsymbol
-              extrn     gethex
-              extrn     load_r7
-              extrn     load_ra
+              extrn     dolines
+              extrn     islibrary
+              extrn     load_d
               extrn     procbase
+              extrn     save_d
               extrn     save_r7
-              extrn     save_ra
-              extrn     symbols
-              extrn     trimrf
 
               call      dofixups       ; process any adjustments
               ldi       0              ; clear proc base
               phi       r7
               plo       r7
               hlpr      save_r7,procbase ; set proc base
-              rtn                      ; return to caller
+              hlpr      load_d,islibrary ; need to see if processing library
+              lbz       return         ; jump if not
+              ldi       0              ; otherwise turn off line processing
+              hlpr      save_d,dolines
+return:       rtn                      ; return to caller
 
               endp
 

@@ -7,6 +7,7 @@
               extrn     addlibrary
               extrn     commandfile
               extrn     dofixups
+              extrn     dolibraries
               extrn     fixups
               extrn     libpath
               extrn     libraries
@@ -44,6 +45,9 @@ nextfixup:    dw        0
 outputname:   ds        80
 symbols:      dw        0
 offset:       dw        0
+islibrary:    db        0
+dolines:      db        0
+flag:         db        0
 
 ; ***************************************
 ; ***** Helper functions tied to R9 *****
@@ -278,6 +282,9 @@ start2:       call      o_inmsg        ; display banner
               hlpr      save_d,outputname
               hlpr      save_d,fixups  ; clear fixups
               hlpr      save_d,flags   ; clear flags
+              hlpr      save_d,islibrary ; not processing libraries
+              ldi       0ffh
+              hlpr      save_d,dolines ; set line processing on
               mov       rf,0ffffh      ; set lowest
               hlpr      save_rf,lowest
               hlpr      save_rf,startaddr ; and start address
@@ -515,10 +522,23 @@ cmd_done:     dec       ra             ; move back to non name character
               call      commandfile    ; process command file
               lbr       loop           ; back to command loop
 
+
+; ***************************************************
+; ***** Object file processing is now complete  *****
+; ***** Perform any fixups and library searches *****
+; ***************************************************
 finished:     mov       rf,fixups      ; point to fixups table
               ldn       rf             ; check for fixups
               lbz       nofixups       ; jump if no fixups
+              ldi       0              ; set flag to zero
+              hlpr      save_d,flag
               call      dofixups       ; do fixups
+              mov       rf,fixups      ; point to fixups table
+              ldn       rf             ; retrieve first byte
+              lbz       nofixups       ; jump if no unresolved references
+              call      dolibraries    ; search libraries for unresolved references
+              hlpr      load_d,flag    ; get flag
+              lbnz      finished       ; jump if an operation occurred
 
 nofixups:     call      o_inmsg        ; display data
               db        'Writing output : ',0
@@ -664,9 +684,12 @@ flags:        db        0
               public    address
               public    buffer
               public    cfildes
+              public    dolines
               public    fildes
+              public    flag
               public    highest
               public    incopy
+              public    islibrary
               public    load_d
               public    load_r7
               public    load_r8

@@ -5,18 +5,38 @@
               proc      processproc
 
               extrn     address
+              extrn     checkfixups
+              extrn     dolines
               extrn     findsymbol
+              extrn     flag
               extrn     gethex
+              extrn     islibrary
+              extrn     load_d
               extrn     load_r7
               extrn     load_ra
               extrn     procbase
+              extrn     save_d
               extrn     save_r7
               extrn     save_ra
               extrn     symbols
               extrn     trimrf
 
               inc       rf             ; move past {
-              call      findsymbol     ; see if already exists
+              hlpr      load_d,islibrary ; see if processing library file
+              lbz       not_library    ; jump if not
+              call      checkfixups    ; see if proc appears in fixups
+              lbnf      return         ; return if proc is not needed
+              ldi       0ffh           ; signal to process lines
+              hlpr      save_d,dolines
+              hlpr      save_d,flag    ; signal library routine loaded
+              push      rf             ; save name position
+              call      o_inmsg
+              db        'Linking ',0
+              call      o_msg          ; display name
+              call      o_inmsg
+              db        ' from library',10,13,0
+              pop       rf             ; recover name
+not_library:  call      findsymbol     ; see if already exists
               lbdf      noexist        ; jump if not a duplicate
               call      o_inmsg        ; display error
               db        'Error: Duplicate symbol: ',0
@@ -64,7 +84,7 @@ copy_dn:      ldi       0              ; terminate name
               glo       r7
               str       ra
               hlpr      save_r7,procbase ; set proc base
-              rtn                      ; return to caller
+return:       rtn                      ; return to caller
 
               endp
 

@@ -7,9 +7,11 @@
               extrn     dropfixup
               extrn     findsymbol
               extrn     fixups
+              extrn     flag
               extrn     load_r7
               extrn     procbase
               extrn     readmem
+              extrn     save_d
               extrn     writemem
 
 loop:         mov       rf,fixups      ; point to fixups table
@@ -29,7 +31,9 @@ no_adjust:    push      rf             ; save table position
               mov       r8,rf          ; save fixup position
 name_lp:      lda       rf             ; find end of name
               lbnz      name_lp        ; loop until terminator found
-do_fixup:     ldn       rf             ; get fixup type
+do_fixup:     ldi       0ffh           ; signal fixup occurred
+              hlpr      save_d,flag
+              ldn       rf             ; get fixup type
               smi       '?'            ; check for 16 bit
               lbz       fix_16         ; jump if so
               ldn       rf             ; recover fixup type

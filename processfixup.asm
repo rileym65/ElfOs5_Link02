@@ -75,3 +75,9 @@ error:        call      o_inmsg        ; display error
 
               endp
 
+; Fixup record structure
+;  n bytes - name, zero terminated
+;  1 byte  - fixup type
+;  2 bytes - fixup address
+;  1 byte  - fixup offset
+
