@@ -3,6 +3,7 @@ INCDIR=../../Include
 LIBDIR=../../Lib
 INSTDIR=../../Image/bin
 OBJS = \
+	addlibrary.prg \
 	checkrange.prg \
 	checkvmem.prg \
 	commandfile.prg \

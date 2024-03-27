@@ -4,9 +4,12 @@
 
               org       2000h
 
+              extrn     addlibrary
               extrn     commandfile
               extrn     dofixups
               extrn     fixups
+              extrn     libpath
+              extrn     libraries
               extrn     loadfile
               extrn     trimrf
               extrn     writebinary
@@ -282,6 +285,8 @@ start2:       call      o_inmsg        ; display banner
               hlpr      save_rf,highest
               hlpr      save_rf,procbase
               hlpr      save_rf,offset
+              hlpr      save_rf,libpath
+              hlpr      save_rf,libraries
               ldi       'E'            ; set output mode to Elf/OS
               hlpr      save_d,outputmode
               mov       rf,fixups      ; mark end of fixup table
@@ -454,7 +459,33 @@ s_nosign:     mov       ra,rf          ; reset command line pointer
               mov       rf,rd
               hlpr      save_rf,offset ; save offset
               lbr       trim           ; then next option
-not_uc_o:
+not_uc_o:     ldn       ra             ; get switch
+              smi       'l'            ; check for -l
+              lbnz      not_l          ; jump if not
+              inc       ra             ; move past switch
+              mov       rf,buffer      ; point to buffer
+l_loop:       lda       ra             ; move past any spaces
+              smi       ' '
+              lbz       l_loop
+              dec       ra             ; move back to non-space
+              ldn       ra             ; check for end of command line
+              lbz       o_error        ; jump if error
+l_copy:       lda       ra             ; read character from command line
+              lbz       l_done         ; jump if done
+              plo       re             ; keep a copy
+              smi       ' '            ; check for space
+              lbz       l_done         ; space ends name
+              glo       re             ; recover character
+              str       rf             ; store intto outputname
+              inc       rf
+              lbr       l_copy         ; finish copying name
+l_done:       ldi       0              ; terminate name
+              str       rf
+              mov       rf,buffer      ; point to buffer
+              call      addlibrary     ; add library
+              lbr       trim           ; then next line
+
+not_l:
 
 sw_error:     call      o_inmsg        ; display error
               db        'Unknown switch: ',0

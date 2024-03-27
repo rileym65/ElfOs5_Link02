@@ -4,6 +4,7 @@
 
               proc      commandfile
 
+              extrn     addlibrary
               extrn     buffer
               extrn     cfildes
               extrn     fopen
@@ -41,6 +42,9 @@ opened:       mov       rf,buffer      ; point to buffer
               call      strcasecmpin   ; check for offset command
               db        'offset ',0
               lbdf      is_offset      ; jump if so
+              call      strcasecmpin   ; check for library command
+              db        'library ',0
+              lbdf      is_library     ; jump if so
 
               lbr       opened         ; read and process next line
 
@@ -115,6 +119,19 @@ offset_p:     ldi       0              ; signal positive
               inc       rd
 offset_p2:    mov       rf,rd          ; move to rf
               hlpr      save_rf,offset ; save offset
+              lbr       opened         ; read and process next line
+
+is_library:   call      trimrf         ; move past spaces
+              push      rf             ; save name start position
+lib_loop_1:   lda       rf             ; look for end of name
+              lbz       lib_done       ; jump if end found
+              smi       ' '            ; space also ends name
+              lbnz      lib_loop_1     ; loop until end found
+lib_done:     dec       rf             ; move back to non-name char
+              ldi       0              ; and terminate name
+              str       rf
+              pop       rf             ; recover start of name
+              call      addlibrary     ; and add to library list
               lbr       opened         ; read and process next line
 
               endp

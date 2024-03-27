@@ -4,6 +4,7 @@
 
               proc      processdirect
 
+              extrn     addlibrary
               extrn     address
               extrn     load_rf
               extrn     trimrf
@@ -14,6 +15,9 @@
               call      strcasecmpin   ; check for align directive
               db        'align ',0
               lbdf      do_align       ; jump if alignment
+              call      strcasecmpin   ; check for library directive
+              db        'library ',0
+              lbdf      is_library     ; jump if so
 
               rtn                      ; return to caller
 
@@ -111,6 +115,19 @@ is_page:      hlpr      load_rf,address ; get current address
               ldi       0ffh            ; amount to add
               str       r2
               lbr       process        ; process it
+
+is_library:   call      trimrf         ; move past spaces
+              push      rf             ; save name start position
+lib_loop_1:   lda       rf             ; look for end of name
+              lbz       lib_done       ; jump if end found
+              smi       ' '            ; space also ends name
+              lbnz      lib_loop_1     ; loop until end found
+lib_done:     dec       rf             ; move back to non-name char
+              ldi       0              ; and terminate name
+              str       rf
+              pop       rf             ; recover start of name
+              call      addlibrary     ; and add to library list
+              rtn                      ; return to caller
 
               endp
 

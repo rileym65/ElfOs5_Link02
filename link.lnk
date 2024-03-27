@@ -1,4 +1,5 @@
 add main.prg
+add addlibrary.prg
 add checkrange.prg
 add checkvmem.prg
 add commandfile.prg
