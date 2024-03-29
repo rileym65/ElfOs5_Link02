@@ -35,6 +35,7 @@ Object Files:
   .align 128           - Align procedure on 128-byte boundary
   .align page          - Align procedure on page boundary (256 bytes)
   .library filename    - Specify library to search
+  .requires proc       - Require specified proc to be loaded
   :addr bb bb bb ...   - Program bytes
   @addr                - Start address
   ?name addr           - External reference used at addr

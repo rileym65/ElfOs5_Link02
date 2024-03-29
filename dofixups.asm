@@ -51,6 +51,9 @@ do_fixup:     ldi       0ffh           ; signal fixup occurred
               ldn       rf             ; recover fixup type
               smi       'v'            ; check for low byte adjustment
               lbz       adj_low        ; jump if so
+              ldn       rf             ; recover fixup type
+              smi       '$'            ; check for requires
+              lbz       adj_req        ; jump if so
               rtn                      ; return if invalid fix
 
 notfound:     lda       rf             ; find end of fixup name
@@ -130,6 +133,8 @@ adj_low:      hlpr      load_r7,procbase ; get proc base
 
 adj_high:     hlpr      load_r7,procbase ; get proc base
               lbr       fix_high       ; now handle as fix high
+
+adj_req:      lbr       now_drop       ; nothing to do, just drop
 
 return:       rtn                      ; return to caller
 

@@ -6,8 +6,12 @@
 
               extrn     addlibrary
               extrn     address
+              extrn     findsymbol
+              extrn     load_r8
               extrn     load_rf
+              extrn     nextfixup
               extrn     trimrf
+              extrn     save_r8
               extrn     save_rf
               extrn     strcasecmpin
 
@@ -18,8 +22,11 @@
               call      strcasecmpin   ; check for library directive
               db        'library ',0
               lbdf      is_library     ; jump if so
+              call      strcasecmpin   ; check for library directive
+              db        'requires ',0
+              lbdf      is_requires    ; jump if so
 
-              rtn                      ; return to caller
+return:       rtn                      ; return to caller
 
 do_align:     call      trimrf         ; move past spaces
               call      strcasecmpin   ; check for word alignment
@@ -128,6 +135,38 @@ lib_done:     dec       rf             ; move back to non-name char
               pop       rf             ; recover start of name
               call      addlibrary     ; and add to library list
               rtn                      ; return to caller
+
+is_requires:  call      trimrf         ; move past spaces
+              push      rf             ; save position
+              call      findsymbol     ; see if symbol already exists
+              pop       rf             ; recover RF
+              lbnf      return         ; do nothing if so
+              hlpr      load_r8,nextfixup ; get end of fixup table
+name_lp:      lda       rf             ; get byte from name
+              lbz       name_done      ; done if terminator
+              plo       re             ; keep a copy
+              smi       ' '            ; check for end of name
+              lbz       name_done      ; jump if done with name
+              glo       re             ; recover character
+              str       r8             ; store into fixup table
+              inc       r8
+              lbr       name_lp        ; loop until name copied
+name_done:    ldi       0              ; terminate name
+              str       r8
+              inc       r8
+              ldi       '$'            ; set type as requires
+              str       r8
+              inc       r8
+              ldi       0              ; address is zero
+              str       r8
+              inc       r8
+              str       r8
+              inc       r8
+              str       r8             ; offset is zero
+              inc       r8
+              str       r8             ; write table terminator
+              hlpr      save_r8,nextfixup ; write new fixup pointer
+              rtn                      ; and return to caller
 
               endp
 
