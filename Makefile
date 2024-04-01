@@ -3,6 +3,7 @@ INCDIR=../../Include
 LIBDIR=../../Lib
 INSTDIR=../../Image/bin
 OBJS = \
+	addlibpath.prg \
 	addlibrary.prg \
 	checkfixups.prg \
 	checkrange.prg \
@@ -17,6 +18,7 @@ OBJS = \
 	gethex.prg \
 	loadfile.prg \
 	main.prg \
+	openfile.prg \
 	processadjust.prg \
 	processadvance.prg \
 	processdata.prg \

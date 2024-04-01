@@ -4,6 +4,7 @@
 
               org       2000h
 
+              extrn     addlibpath
               extrn     addlibrary
               extrn     commandfile
               extrn     dofixups
@@ -273,7 +274,7 @@ loadsec:      lda       rf
 ; ***************************************
 
 start2:       call      o_inmsg        ; display banner
-              db        'Link/02 v0.2',10,13
+              db        'Link/02 v0.3',10,13
               db        'by Michael H. Riley',10,13,10,13,0
 
               mov       r9,helpers
@@ -492,7 +493,32 @@ l_done:       ldi       0              ; terminate name
               call      addlibrary     ; add library
               lbr       trim           ; then next line
 
-not_l:
+not_l:        ldn       ra             ; get switch
+              smi       'L'            ; check for -L
+              lbnz      not_uc_l       ; jump if not
+              inc       ra             ; move past switch
+              mov       rf,buffer      ; point to buffer
+ul_loop:      lda       ra             ; move past any spaces
+              smi       ' '
+              lbz       ul_loop
+              dec       ra             ; move back to non-space
+              ldn       ra             ; check for end of command line
+              lbz       o_error        ; jump if error
+ul_copy:      lda       ra             ; read character from command line
+              lbz       ul_done        ; jump if done
+              plo       re             ; keep a copy
+              smi       ' '            ; check for space
+              lbz       ul_done        ; space ends name
+              glo       re             ; recover character
+              str       rf             ; store intto outputname
+              inc       rf
+              lbr       ul_copy        ; finish copying name
+ul_done:      ldi       0              ; terminate name
+              str       rf
+              mov       rf,buffer      ; point to buffer
+              call      addlibpath     ; add library path
+              lbr       trim           ; then next line
+not_uc_l:
 
 sw_error:     call      o_inmsg        ; display error
               db        'Unknown switch: ',0
@@ -632,7 +658,12 @@ pad_done:     lda       rf             ; get symbol value
               pop       rf             ; recover table position
               lbr       sym_loop       ; and show remaining symbols
 
-no_symbols:
+no_symbols:   hlpr      load_rf,highest ; get highest address written
+              glo       rf             ; zero check
+              str       r2
+              ghi       rf
+              or
+              lbz       return         ; no output if no bytes written
               hlpr      load_d,outputmode
               plo       re             ; save mode
               smi       'B'            ; check binary mode
@@ -685,6 +716,7 @@ flags:        db        0
               public    buffer
               public    cfildes
               public    dolines
+              public    dta
               public    fildes
               public    flag
               public    highest

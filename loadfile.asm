@@ -10,6 +10,7 @@
               extrn     fopen
               extrn     islibrary
               extrn     load_d
+              extrn     openfile
               extrn     outputname
               extrn     processadjust
               extrn     processadvance
@@ -62,7 +63,8 @@ nameset:      call      o_inmsg        ; display message
 do_library:   push      rf             ; keep a copy of the filename
               mov       rd,fildes      ; point to fildes
               mov       r7,0           ; no open flags
-              call      fopen          ; attempt to open the file
+              call      openfile       ; open the file
+;              call      fopen          ; attempt to open the file
               lbnf      opened         ; jump if the file was opened
               call      o_inmsg        ; display error
               db        'Could not open file: ',0

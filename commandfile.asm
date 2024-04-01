@@ -4,6 +4,7 @@
 
               proc      commandfile
 
+              extrn     addlibpath
               extrn     addlibrary
               extrn     buffer
               extrn     cfildes
@@ -45,6 +46,9 @@ opened:       mov       rf,buffer      ; point to buffer
               call      strcasecmpin   ; check for library command
               db        'library ',0
               lbdf      is_library     ; jump if so
+              call      strcasecmpin   ; check for libpath command
+              db        'libpath ',0
+              lbdf      is_libpath     ; jump if so
 
               lbr       opened         ; read and process next line
 
@@ -132,6 +136,19 @@ lib_done:     dec       rf             ; move back to non-name char
               str       rf
               pop       rf             ; recover start of name
               call      addlibrary     ; and add to library list
+              lbr       opened         ; read and process next line
+
+is_libpath:   call      trimrf         ; move past spaces
+              push      rf             ; save name start position
+libp_loop_1:  lda       rf             ; look for end of name
+              lbz       libp_done      ; jump if end found
+              smi       ' '            ; space also ends name
+              lbnz      libp_loop_1    ; loop until end found
+libp_done:    dec       rf             ; move back to non-name char
+              ldi       0              ; and terminate name
+              str       rf
+              pop       rf             ; recover start of name
+              call      addlibpath     ; and add to library search path
               lbr       opened         ; read and process next line
 
               endp

@@ -1,4 +1,5 @@
 add main.prg
+add addlibpath.prg
 add addlibrary.prg
 add checkfixups.prg
 add checkrange.prg
@@ -11,6 +12,7 @@ add findsymbol.prg
 add fopen.prg
 add gethex.prg
 add loadfile.prg
+add openfile.prg
 add processadjust.prg
 add processadvance.prg
 add processdata.prg
