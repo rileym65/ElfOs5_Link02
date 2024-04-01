@@ -7,6 +7,8 @@
               extrn     findsymbol
               extrn     gethex
               extrn     load_ra
+              extrn     load_rf
+              extrn     procbase
               extrn     save_ra
               extrn     symbols
               extrn     trimrf
@@ -55,6 +57,17 @@ copy_dn:      ldi       0              ; terminate name
               inc       ra
               call      trimrf         ; move past spaces
               call      gethex         ; and get symbol value
+              hlpr      load_rf,procbase ; get base address
+              glo       r7             ; add to label value
+              str       r2
+              glo       rf
+              add
+              plo       r7
+              ghi       r7
+              str       r2
+              ghi       rf
+              adc
+              phi       r7
               ghi       r7             ; write value to symbol table
               str       ra
               inc       ra
